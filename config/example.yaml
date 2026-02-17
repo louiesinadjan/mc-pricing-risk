@@ -1,0 +1,26 @@
+# Monte Carlo Pricing Configuration Example
+
+simulation:
+  num_paths: 10000
+  num_steps: 252
+  seed: 42
+  
+model:
+  type: "GBM"  # or "Heston"
+  spot_price: 100.0
+  risk_free_rate: 0.05
+  volatility: 0.2
+  
+payoff:
+  type: "EuropeanCall"  # or "AsianCall"
+  strike: 100.0
+  maturity: 1.0
+
+randomness:
+  type: "StdNormal"  # or "Sobol"
+
+risk:
+  calculate_var: true
+  var_confidence: 0.95
+  calculate_cvar: true
+  cvar_confidence: 0.95
