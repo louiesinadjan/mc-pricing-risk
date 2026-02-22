@@ -9,7 +9,8 @@ class Model {
 public:
     virtual ~Model() = default;
 
-    virtual void generate_path(mc::core::   Path& path, double maturity, mc::randomness::Rng& rng) const = 0;
+    virtual void
+    generate_path(mc::core::Path& path, double maturity, mc::randomness::Rng& rng) const = 0;
 };
 
 } // namespace mc::model
