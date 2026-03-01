@@ -19,6 +19,7 @@ add_library(mc-lib
     src/randomness/stdnormalrng.cpp
     src/payoff/european.cpp
     src/config_loader.cpp
+    src/factory.cpp
 )
 
 target_include_directories(mc-lib PUBLIC

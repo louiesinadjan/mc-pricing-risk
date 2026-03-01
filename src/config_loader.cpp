@@ -81,26 +81,21 @@ Configuration loadConfigFromYaml(const std::string& filepath) {
     
     Configuration cfg;
     
-    // Simulation parameters
     cfg.num_paths = config["simulation"]["num_paths"].as<std::size_t>();
     cfg.num_timesteps = config["simulation"]["num_steps"].as<std::size_t>();
     
-    // Model parameters
     cfg.model_name = config["model"]["type"].as<std::string>();
     cfg.spot = config["model"]["spot_price"].as<double>();
     cfg.drift = config["model"]["risk_free_rate"].as<double>();
     cfg.volatility = config["model"]["volatility"].as<double>();
     cfg.risk_free_rate = config["model"]["risk_free_rate"].as<double>();
     
-    // Payoff parameters
     cfg.payoff_name = config["payoff"]["type"].as<std::string>();
     cfg.strike = config["payoff"]["strike"].as<double>();
     cfg.maturity = config["payoff"]["maturity"].as<double>();
     
-    // Randomness
     cfg.rng_name = config["randomness"]["type"].as<std::string>();
     
-    // Validate configuration
     validateConfiguration(cfg);
     
     return cfg;
