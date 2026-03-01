@@ -11,12 +11,12 @@ struct Configuration {
     std::size_t num_timesteps;
     double maturity;
     double risk_free_rate;
-    
+
     // Model parameters
     double spot;
     double drift;
     double volatility;
-    
+
     // Payoff parameters
     double strike;
 

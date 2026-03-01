@@ -1,19 +1,18 @@
-#include <algorithm>
 #include "mc/payoff/european.hpp"
+#include <algorithm>
 
 namespace mc::payoff {
 
-    EuropeanCall::EuropeanCall(double strike) : strike_(strike) {}
-    EuropeanPut::EuropeanPut(double strike) : strike_(strike) {}
+EuropeanOption::EuropeanOption(double strike, OptionType type) : strike_(strike), type_(type) {}
 
-    double EuropeanCall::evaluate(const mc::core::Path& path) const {
-        const double ST = path[path.size() - 1];
+double EuropeanOption::evaluate(const mc::core::Path& path) const {
+    const double ST = path[path.size() - 1];
+
+    if (type_ == OptionType::Call) {
         return std::max(ST - strike_, 0.0);
-    }
-
-    double EuropeanPut::evaluate(const mc::core::Path& path) const {
-        const double ST = path[path.size() - 1];
+    } else { 
         return std::max(strike_ - ST, 0.0);
     }
-    
 }
+
+} // namespace mc::payoff

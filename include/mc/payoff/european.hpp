@@ -4,21 +4,15 @@
 
 namespace mc::payoff {
 
-class EuropeanCall : public Payoff {
+class EuropeanOption : public Payoff {
 public:
-    explicit EuropeanCall(double strike);
+    EuropeanOption(double strike, OptionType type);
+
     double evaluate(const mc::core::Path& path) const override;
 
 private:
     double strike_;
+    OptionType type_;
 };
 
-class EuropeanPut : public Payoff {
-public:
-    explicit EuropeanPut(double strike);
-    double evaluate(const mc::core::Path& path) const override;
-
-private:
-    double strike_;
-};
 } // namespace mc::payoff

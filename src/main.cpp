@@ -1,17 +1,12 @@
-#include "mc/simulation/simulation.hpp"
-#include "mc/model/gbm.hpp"
-#include "mc/randomness/stdnormalrng.hpp"
-#include "mc/payoff/european.hpp"
 #include "mc/config_loader.hpp"
+#include "mc/factory.hpp"
+#include "mc/simulation/simulation.hpp"
 
-#include <memory>
 #include <iostream>
 
-
 int main(int argc, char* argv[]) {
-    // Load configuration from YAML
     std::string config_path = (argc > 1) ? argv[1] : "./config/config.yaml";
-    
+
     mc::Configuration config;
     try {
         config = mc::loadConfigFromYaml(config_path);
@@ -20,22 +15,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Extract config values for model construction
-    auto model  = std::make_unique<mc::model::GBM>(config.spot, config.drift, config.volatility, config.num_timesteps);
-    auto rng    = std::make_unique<mc::randomness::StdNormalRng>();
-    auto payoff = std::make_unique<mc::payoff::EuropeanCall>(config.strike);
+    auto model = mc::factory::createModel(config);
+    auto rng = mc::factory::createRng(config);
+    auto payoff = mc::factory::createPayoff(config);
 
-    mc::simulation::Simulation simulation(
-        config,
-        std::move(model),
-        std::move(rng),
-        std::move(payoff)
-    );
+    mc::simulation::Simulation simulation(config, std::move(model), std::move(rng), std::move(payoff));
 
     const double price = simulation.run();
 
-    std::cout << "Monte Carlo European Call Price: " << price << std::endl;
+    std::cout << "Monte Carlo Results:\n"
+              << "  Model: " << config.model_name << "\n"
+              << "  Payoff: " << config.payoff_name << "\n"
+              << "  RNG: " << config.rng_name << "\n"
+              << "  Price: " << price << std::endl;
 
     return 0;
 }
-

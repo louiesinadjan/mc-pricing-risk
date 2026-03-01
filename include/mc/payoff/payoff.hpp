@@ -4,6 +4,8 @@
 
 namespace mc::payoff {
 
+enum class OptionType { Call, Put };
+
 class Payoff {
 public:
     virtual ~Payoff() = default;
