@@ -6,8 +6,8 @@ Simulation::Simulation(Configuration config,
                        std::unique_ptr<mc::model::Model> model,
                        std::unique_ptr<mc::randomness::Rng> rng,
                        std::unique_ptr<mc::payoff::Payoff> payoff)
-    : config_(std::move(config)), model_(std::move(model)), rng_(std::move(rng)),
-      payoff_(std::move(payoff)) {}
+    : config_(std::move(config)), model_(std::move(model)), rng_(std::move(rng)), payoff_(std::move(payoff)) {
+}
 
 double Simulation::run() {
     const std::size_t N = config_.num_paths;

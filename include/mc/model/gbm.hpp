@@ -8,7 +8,7 @@ class GBM : public Model {
 public:
     GBM(double spot, double drift, double vol, std::size_t steps);
 
-    void generate_path(mc::core::Path& path, double maturity) const override;
+    void generate_path(mc::core::Path& path, double maturity, mc::randomness::Rng& rng) const override;
 
 private:
     double spot_;
