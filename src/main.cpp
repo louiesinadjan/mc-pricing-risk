@@ -2,37 +2,28 @@
 #include "mc/model/gbm.hpp"
 #include "mc/randomness/stdnormalrng.hpp"
 #include "mc/payoff/european.hpp"
-#include "mc/simulation/configuration.hpp"
+#include "mc/config_loader.hpp"
 
 #include <memory>
 #include <iostream>
 
 
-int main() {
-    const double spot = 100.0;
-    const double drift = 0.05;          // risk-neutral drift (r)
-    const double vol = 0.2;
-    const std::size_t steps = 252;
+int main(int argc, char* argv[]) {
+    // Load configuration from YAML
+    std::string config_path = (argc > 1) ? argv[1] : "./config/config.yaml";
+    
+    mc::Configuration config;
+    try {
+        config = mc::loadConfigFromYaml(config_path);
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to load config: " << e.what() << std::endl;
+        return 1;
+    }
 
-    const double strike = 100.0;
-    const double maturity = 1.0;        // 1 year
-    const double risk_free_rate = 0.05;
-
-    const std::size_t num_paths = 100000;
-
-    auto model  = std::make_unique<mc::model::GBM>(spot, drift, vol, steps);
+    // Extract config values for model construction
+    auto model  = std::make_unique<mc::model::GBM>(config.spot, config.drift, config.volatility, config.num_timesteps);
     auto rng    = std::make_unique<mc::randomness::StdNormalRng>();
-    auto payoff = std::make_unique<mc::payoff::EuropeanCall>(strike);
-
-    mc::Configuration config{
-        num_paths,
-        steps,
-        maturity,
-        risk_free_rate,
-        "GBM",
-        "EuropeanCall",
-        "StdNormalRng"
-    };
+    auto payoff = std::make_unique<mc::payoff::EuropeanCall>(config.strike);
 
     mc::simulation::Simulation simulation(
         config,
