@@ -10,7 +10,7 @@ double EuropeanOption::evaluate(const mc::core::Path& path) const {
 
     if (type_ == OptionType::Call) {
         return std::max(ST - strike_, 0.0);
-    } else { 
+    } else {
         return std::max(strike_ - ST, 0.0);
     }
 }

@@ -12,7 +12,7 @@ model:
   volatility: 0.2
 
 payoff:
-  type: "EuropeanPut"  # or "AsianCall"
+  type: "AsianGeometricCall"  # Options: "EuropeanCall", "EuropeanPut", "AsianArithmeticCall", "AsianArithmeticPut", "AsianGeometricCall", "AsianGeometricPut"
   strike: 100.0
   maturity: 1.0
 

@@ -18,6 +18,7 @@ add_library(mc-lib
     src/model/GBM.cpp
     src/randomness/stdnormalrng.cpp
     src/payoff/european.cpp
+    src/payoff/asian.cpp
     src/config_loader.cpp
     src/factory.cpp
 )

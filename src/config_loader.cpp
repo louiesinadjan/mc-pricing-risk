@@ -16,12 +16,18 @@ void validateModelName(const std::string& model_name) {
 }
 
 void validatePayoffName(const std::string& payoff_name) {
-    static const std::set<std::string> valid_payoffs = {
-        "EuropeanCall", "EuropeanPut", "AsianCall", "AsianPut"};
+    static const std::set<std::string> valid_payoffs = {"EuropeanCall",
+                                                        "EuropeanPut",
+                                                        "AsianArithmeticCall",
+                                                        "AsianArithmeticPut",
+                                                        "AsianGeometricCall",
+                                                        "AsianGeometricPut"};
 
     if (valid_payoffs.find(payoff_name) == valid_payoffs.end()) {
         throw std::invalid_argument("Invalid payoff name: '" + payoff_name +
-                                    "'. Valid payoffs are: EuropeanCall, EuropeanPut, AsianCall, AsianPut");
+                                    "'. Valid payoffs are: EuropeanCall, EuropeanPut, "
+                                    "AsianArithmeticCall, AsianArithmeticPut, "
+                                    "AsianGeometricCall, AsianGeometricPut");
     }
 }
 

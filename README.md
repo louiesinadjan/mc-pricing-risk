@@ -45,7 +45,7 @@ model:
   volatility: 0.2
 
 payoff:
-  type: "EuropeanCall"   # Options: EuropeanCall, EuropeanPut, AsianCall, AsianPut
+  type: "EuropeanCall"   # Options: EuropeanCall, EuropeanPut, AsianArithmeticCall, AsianArithmeticPut, AsianGeometricCall, AsianGeometricPut
   strike: 100.0
   maturity: 1.0
 
@@ -56,7 +56,9 @@ randomness:
 ## Supported Components
 
 - **Models**: GBM, Heston
-- **Payoffs**: EuropeanCall, EuropeanPut, AsianCall, AsianPut  
+- **Payoffs**: 
+  - European: Call, Put
+  - Asian: Arithmetic Call/Put, Geometric Call/Put
 - **RNG**: StdNormal, Sobol
 
 ## Validation

@@ -1,10 +1,13 @@
 #include "mc/factory.hpp"
 #include "mc/model/gbm.hpp"
+#include "mc/payoff/asian.hpp"
 #include "mc/payoff/european.hpp"
 #include "mc/randomness/stdnormalrng.hpp"
+#include "mc/simulation/configuration.hpp"
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace mc::factory {
@@ -62,15 +65,26 @@ static const std::map<std::string, PayoffCreator> payoff_creators = {
     {"EuropeanPut",
      [](const Configuration& cfg) {
          return std::make_unique<mc::payoff::EuropeanOption>(cfg.strike, mc::payoff::OptionType::Put);
-     }}
-    // Add more payoffs here:
-    // {"AsianCall", [](const Configuration& cfg) {
-    //     return std::make_unique<mc::payoff::AsianCall>(cfg.strike);
-    // }},
-    // {"AsianPut", [](const Configuration& cfg) {
-    //     return std::make_unique<mc::payoff::AsianPut>(cfg.strike);
-    // }}
-};
+     }},
+    {"AsianArithmeticCall",
+     [](const Configuration& cfg) {
+         return std::make_unique<mc::payoff::AsianOption>(
+             cfg.strike, mc::payoff::AverageType::Arithmetic, mc::payoff::OptionType::Call);
+     }},
+    {"AsianArithmeticPut",
+     [](const Configuration& cfg) {
+         return std::make_unique<mc::payoff::AsianOption>(
+             cfg.strike, mc::payoff::AverageType::Arithmetic, mc::payoff::OptionType::Put);
+     }},
+    {"AsianGeometricCall",
+     [](const Configuration& cfg) {
+         return std::make_unique<mc::payoff::AsianOption>(
+             cfg.strike, mc::payoff::AverageType::Geometric, mc::payoff::OptionType::Call);
+     }},
+    {"AsianGeometricPut", [](const Configuration& cfg) {
+         return std::make_unique<mc::payoff::AsianOption>(
+             cfg.strike, mc::payoff::AverageType::Geometric, mc::payoff::OptionType::Put);
+     }}};
 
 std::unique_ptr<mc::payoff::Payoff> createPayoff(const Configuration& config) {
     auto it = payoff_creators.find(config.payoff_name);
