@@ -1,4 +1,5 @@
 #include "mc/simulation/simulation.hpp"
+#include <iostream>
 
 namespace mc::simulation {
 
@@ -16,6 +17,9 @@ double Simulation::run() {
 
     double sum = 0.0;
     for (std::size_t i = 0; i < N; ++i) {
+        // if(i % (N / 10) == 0) {
+        //     std::cout << "Progress: " << (i * 100.0 / N) << "%\n";
+        // }
         mc::core::Path path;
         model_->generate_path(path, T, *rng_);
         const double payoff = payoff_->evaluate(path);

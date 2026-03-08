@@ -39,7 +39,13 @@ using RngCreator = std::function<std::unique_ptr<mc::randomness::Rng>(const Conf
 
 static const std::map<std::string, RngCreator> rng_creators = {
     {"StdNormal",
-     [](const Configuration& /*cfg*/) { return std::make_unique<mc::randomness::StdNormalRng>(); }}
+     [](const Configuration& cfg) {
+         if (cfg.seed == 0) {
+             return std::make_unique<mc::randomness::StdNormalRng>();
+         } else {
+             return std::make_unique<mc::randomness::StdNormalRng>(cfg.seed);
+         }
+     }}
     // Add more RNGs here:
     // {"Sobol", [](const Configuration& cfg) {
     //     return std::make_unique<mc::randomness::SobolRng>();

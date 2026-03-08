@@ -1,26 +1,64 @@
-# Monte Carlo Pricing Configuration Example
+market:
+  spot: 100.0
+  rate: 0.05
+  # dividend_yield: 0.0   # Not implemented yet
 
-simulation:
-  num_paths: 10000
-  num_steps: 252
-  seed: 42
-  
-model:
-  type: "GBM"  # or "Heston"
-  spot_price: 100.0
-  risk_free_rate: 0.05
-  volatility: 0.2
-
-payoff:
-  type: "AsianGeometricCall"  # Options: "EuropeanCall", "EuropeanPut", "AsianArithmeticCall", "AsianArithmeticPut", "AsianGeometricCall", "AsianGeometricPut"
+contract:
+  type: european_call       # european_call | european_put | asian_arithmetic_call | asian_geometric_call
   strike: 100.0
   maturity: 1.0
 
-randomness:
-  type: "StdNormal"  # or "Sobol"
+  averaging:
+    type: arithmetic      # arithmetic | geometric
+    frequency: daily      # used for Asian options
+    start_time: 0.0
+    end_time: 1.0
+
+model:
+  type: gbm
+
+  gbm:
+    volatility: 0.20
+
+  # local_vol:
+  #   surface_file: "vol_surface.csv"
+
+  # heston:
+  #   v0: 0.04
+  #   kappa: 2.0
+  #   theta: 0.04
+  #   sigma: 0.5
+  #   rho: -0.7
+
+simulation:
+  paths: 100000
+  steps: 252
+  seed: 42
+
+  # antithetic: false
+  # control_variate: false
+
+rng:
+  type: std_normal          # std_normal | mt19937 | pcg
+
+  # distribution: normal
+  # algorithm: ziggurat
 
 risk:
-  calculate_var: true
-  var_confidence: 0.95
-  calculate_cvar: true
-  cvar_confidence: 0.95
+  # metrics:
+  #   - var
+  #   - cvar
+
+  # confidence: 0.95
+
+# greeks:
+#   delta: true
+#   gamma: true
+#   vega: true
+#   theta: true
+#   bump_size: 0.001
+
+output:
+  print_price: true
+  print_runtime: true
+  print_paths_per_second: true

@@ -2,6 +2,7 @@
 #include "mc/factory.hpp"
 #include "mc/simulation/simulation.hpp"
 
+#include <chrono>
 #include <iostream>
 
 int main(int argc, char* argv[]) {
@@ -21,13 +22,33 @@ int main(int argc, char* argv[]) {
 
     mc::simulation::Simulation simulation(config, std::move(model), std::move(rng), std::move(payoff));
 
+    // Time the simulation
+    auto start_time = std::chrono::high_resolution_clock::now();
     const double price = simulation.run();
+    auto end_time = std::chrono::high_resolution_clock::now();
 
-    std::cout << "Monte Carlo Results:\n"
-              << "  Model: " << config.model_name << "\n"
-              << "  Payoff: " << config.payoff_name << "\n"
-              << "  RNG: " << config.rng_name << "\n"
-              << "  Price: " << price << std::endl;
+    // Calculate runtime metrics
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    double elapsed_seconds = elapsed.count() / 1000.0;
+    double paths_per_second = config.num_paths / elapsed_seconds;
+
+    // Print output based on config
+    std::cout << "Monte Carlo Results:\n";
+    std::cout << "  Model: " << config.model_name << "\n";
+    std::cout << "  Payoff: " << config.payoff_name << "\n";
+    std::cout << "  RNG: " << config.rng_name << "\n";
+
+    if (config.print_price) {
+        std::cout << "  Price: " << price << "\n";
+    }
+    if (config.print_runtime) {
+        std::cout << "  Runtime: " << elapsed_seconds << " seconds\n";
+    }
+    if (config.print_paths_per_second) {
+        std::cout << "  Paths/second: " << paths_per_second << "\n";
+    }
+
+    std::cout << std::endl;
 
     return 0;
 }

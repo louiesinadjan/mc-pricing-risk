@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(yaml-cpp REQUIRED)
+find_package(GTest REQUIRED)
 
 include(CompilerOptions)
 include(Sanitizers)
@@ -31,3 +32,13 @@ target_link_libraries(mc-lib PUBLIC yaml-cpp::yaml-cpp)
 
 add_executable(mc-pricing src/main.cpp)
 target_link_libraries(mc-pricing PRIVATE mc-lib yaml-cpp::yaml-cpp)
+
+enable_testing()
+
+find_package(GTest REQUIRED)
+
+add_executable(test_monte_carlo tests/test_mc.cpp)
+target_link_libraries(test_monte_carlo PRIVATE mc-lib GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(test_monte_carlo)

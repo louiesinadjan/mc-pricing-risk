@@ -5,7 +5,7 @@ High-performance Monte Carlo simulations for options pricing and risk analysis.
 ## Prerequisites
 
 ```bash
-brew install yaml-cpp cmake
+brew install yaml-cpp cmake googletest
 ```
 
 ## Build
@@ -13,6 +13,7 @@ brew install yaml-cpp cmake
 ```bash
 cmake -S . -B build
 cmake --build build
+ctest --verbose
 ```
 
 ## Usage
