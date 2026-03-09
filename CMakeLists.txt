@@ -33,6 +33,8 @@ target_link_libraries(mc-lib PUBLIC yaml-cpp::yaml-cpp)
 add_executable(mc-pricing src/main.cpp)
 target_link_libraries(mc-pricing PRIVATE mc-lib yaml-cpp::yaml-cpp)
 
+# Unit tests
+
 enable_testing()
 
 find_package(GTest REQUIRED)
@@ -42,3 +44,8 @@ target_link_libraries(test_monte_carlo PRIVATE mc-lib GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(test_monte_carlo)
+
+# Benchmarking
+
+add_executable(benchmark_simulation benchmarks/benchmark_simulation.cpp)
+target_link_libraries(benchmark_simulation PRIVATE mc-lib)
