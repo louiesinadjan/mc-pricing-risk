@@ -36,7 +36,8 @@ int main(int argc, char* argv[]) {
     std::cout << "Monte Carlo Results:\n";
     std::cout << "  Model: " << config.model_name << "\n";
     std::cout << "  Payoff: " << config.payoff_name << "\n";
-    std::cout << "  RNG: " << config.rng_name << "\n";
+    std::cout << "  RNG: " << config.rng_name
+              << (config.distribution_name.empty() ? "" : " + " + config.distribution_name) << "\n";
 
     if (config.print_price) {
         std::cout << "  Price: " << price << "\n";

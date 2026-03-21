@@ -8,7 +8,6 @@ namespace mc::randomness {
 class StdNormalRng : public Rng {
 public:
     explicit StdNormalRng(std::mt19937::result_type seed = std::random_device{}());
-    ~StdNormalRng() override;
 
     double nextNormal() override;
 

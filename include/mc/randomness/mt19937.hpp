@@ -12,7 +12,6 @@ public:
     using seed_type = std::mt19937::result_type;
 
     explicit MersenneTwisterRng(seed_type seed = std::random_device{}());
-    ~MersenneTwisterRng();
 
     double nextUniform();
 

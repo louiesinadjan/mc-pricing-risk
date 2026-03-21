@@ -16,7 +16,7 @@ include(Warnings)
 
 add_library(mc-lib
     src/simulation/simulation.cpp
-    src/model/GBM.cpp
+    src/model/gbm.cpp
     src/randomness/stdnormalrng.cpp
     src/randomness/mt19937.cpp
     src/payoff/european.cpp
