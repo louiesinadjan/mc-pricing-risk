@@ -39,10 +39,8 @@ simulation:
   # control_variate: false
 
 rng:
-  type: std_normal          # std_normal | mt19937 | pcg
-
-  # distribution: normal
-  # algorithm: ziggurat
+  type: mt19937          # std_normal | mt19937
+  distribution: box_muller  # required for engine-only types (mt19937); options: box_muller
 
 risk:
   # metrics:

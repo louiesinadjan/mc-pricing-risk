@@ -2,6 +2,9 @@
 #include "mc/model/gbm.hpp"
 #include "mc/payoff/asian.hpp"
 #include "mc/payoff/european.hpp"
+#include "mc/randomness/box_muller.hpp"
+#include "mc/randomness/mt19937.hpp"
+#include "mc/randomness/normal_rng.hpp"
 #include "mc/randomness/stdnormalrng.hpp"
 #include "mc/simulation/configuration.hpp"
 
@@ -45,6 +48,18 @@ static const std::map<std::string, RngCreator> rng_creators = {
          } else {
              return std::make_unique<mc::randomness::StdNormalRng>(cfg.seed);
          }
+     }},
+    {"mt19937",
+     [](const Configuration& cfg) -> std::unique_ptr<mc::randomness::Rng> {
+         auto seed = cfg.seed == 0
+             ? static_cast<mc::randomness::MersenneTwisterRng::seed_type>(std::random_device{}())
+             : static_cast<mc::randomness::MersenneTwisterRng::seed_type>(cfg.seed);
+
+         if (cfg.distribution_name == "BoxMuller") {
+             return std::make_unique<mc::randomness::NormalRng<mc::randomness::MersenneTwisterRng,
+                                                               mc::randomness::BoxMullerNormal>>(seed);
+         }
+         throw std::invalid_argument("Unsupported distribution for mt19937: " + cfg.distribution_name);
      }}
     // Add more RNGs here:
     // {"Sobol", [](const Configuration& cfg) {

@@ -13,59 +13,59 @@ brew install yaml-cpp cmake googletest
 ```bash
 cmake -S . -B build
 cmake --build build
-ctest --verbose
 ```
 
-## Usage
-
-Run the Monte Carlo simulation with a configuration file:
+## Run
 
 ```bash
-./build/mc-pricing ./config/config.yaml
+./build/mc-pricing config/config.yaml
 ```
 
-Or with a custom config path:
+## Tests
 
 ```bash
-./build/mc-pricing ./path/to/custom/config.yaml
+# Run all tests
+ctest --test-dir build
+
+# Run with output on failure
+ctest --test-dir build --output-on-failure
+
+# Run a specific test by name
+ctest --test-dir build -R BoxMullerTest
+```
+
+## Benchmarks
+
+```bash
+./build/benchmark_simulation
 ```
 
 ## Configuration
 
-Edit `config/config.yaml` to customize the simulation:
+Edit `config/config.yaml` to change the simulation:
 
 ```yaml
-simulation:
-  num_paths: 100000      # Number of Monte Carlo paths
-  num_steps: 252         # Time steps per path
+market:
+  spot: 100.0
+  rate: 0.05
 
-model:
-  type: "GBM"            # Options: GBM, Heston
-  spot_price: 100.0
-  risk_free_rate: 0.05
-  volatility: 0.2
-
-payoff:
-  type: "EuropeanCall"   # Options: EuropeanCall, EuropeanPut, AsianArithmeticCall, AsianArithmeticPut, AsianGeometricCall, AsianGeometricPut
+contract:
+  type: european_call   # european_call, european_put,
+                        # asian_arithmetic_call, asian_arithmetic_put,
+                        # asian_geometric_call, asian_geometric_put
   strike: 100.0
   maturity: 1.0
 
-randomness:
-  type: "StdNormal"      # Options: StdNormal, Sobol
+model:
+  type: gbm
+  gbm:
+    volatility: 0.20
+
+simulation:
+  paths: 100000
+  steps: 252
+  seed: 42              # 0 = random seed
+
+rng:
+  type: std_normal      # std_normal, mersenne_twister
 ```
-
-## Supported Components
-
-- **Models**: GBM, Heston
-- **Payoffs**: 
-  - European: Call, Put
-  - Asian: Arithmetic Call/Put, Geometric Call/Put
-- **RNG**: StdNormal, Sobol
-
-## Validation
-
-Configuration is automatically validated for:
-- Valid component names
-- Positive spot price, strike, maturity
-- Non-negative volatility and risk-free rate
-- Positive path and timestep counts

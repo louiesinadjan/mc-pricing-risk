@@ -33,6 +33,7 @@ struct Configuration {
     std::string model_name;
     std::string payoff_name;
     std::string rng_name;
+    std::string distribution_name; // required for engine-only RNGs (e.g. mt19937)
 
     // Output options
     bool print_price = true;

@@ -31,11 +31,26 @@ void validatePayoffName(const std::string& payoff_name) {
     }
 }
 
-void validateRngName(const std::string& rng_name) {
-    static const std::set<std::string> valid_rngs = {"StdNormal", "Sobol"};
+void validateRngConfig(const std::string& rng_name, const std::string& distribution_name) {
+    static const std::set<std::string> valid_rngs = {"StdNormal", "mt19937"};
+    // Engine-only RNGs produce uniform samples and require an explicit distribution.
+    static const std::set<std::string> engine_only_rngs = {"mt19937"};
+    static const std::set<std::string> valid_distributions = {"BoxMuller"};
 
     if (valid_rngs.find(rng_name) == valid_rngs.end()) {
-        throw std::invalid_argument("Invalid RNG name: '" + rng_name + "'. Valid RNGs are: StdNormal, Sobol");
+        throw std::invalid_argument("Invalid RNG type: '" + rng_name +
+                                    "'. Valid types are: StdNormal, mt19937");
+    }
+
+    if (engine_only_rngs.count(rng_name)) {
+        if (distribution_name.empty()) {
+            throw std::invalid_argument("RNG '" + rng_name +
+                                        "' requires a distribution. Add 'distribution: box_muller' under the rng section.");
+        }
+        if (!valid_distributions.count(distribution_name)) {
+            throw std::invalid_argument("Invalid distribution: '" + distribution_name +
+                                        "'. Valid distributions are: box_muller");
+        }
     }
 }
 
@@ -72,7 +87,7 @@ void validateNumericalParameters(const Configuration& cfg) {
 void validateConfiguration(const Configuration& config) {
     validateModelName(config.model_name);
     validatePayoffName(config.payoff_name);
-    validateRngName(config.rng_name);
+    validateRngConfig(config.rng_name, config.distribution_name);
     validateNumericalParameters(config);
 }
 
@@ -136,9 +151,18 @@ Configuration loadConfigFromYaml(const std::string& filepath) {
     cfg.model_name = map_name(model_type, model_to_name, "Unknown model type: ");
 
     // RNG → rng name mapping
-    static const std::unordered_map<std::string, std::string> rng_to_name = {{"std_normal", "StdNormal"},
-                                                                             {"sobol", "Sobol"}};
+    static const std::unordered_map<std::string, std::string> rng_to_name = {
+        {"std_normal", "StdNormal"},
+        {"mt19937", "mt19937"}};
     cfg.rng_name = map_name(rng_type, rng_to_name, "Unknown RNG type: ");
+
+    // Distribution (required for engine-only RNGs like mt19937)
+    if (config["rng"]["distribution"]) {
+        static const std::unordered_map<std::string, std::string> dist_to_name = {
+            {"box_muller", "BoxMuller"}};
+        const std::string dist_type = config["rng"]["distribution"].as<std::string>();
+        cfg.distribution_name = map_name(dist_type, dist_to_name, "Unknown distribution: ");
+    }
 
     // Only read relevant model parameter block
     if (cfg.model_name == "GBM") {

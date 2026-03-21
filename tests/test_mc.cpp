@@ -1,6 +1,9 @@
 #include "mc/model/gbm.hpp"
 #include "mc/payoff/asian.hpp"
 #include "mc/payoff/european.hpp"
+#include "mc/randomness/box_muller.hpp"
+#include "mc/randomness/mt19937.hpp"
+#include "mc/randomness/normal_rng.hpp"
 #include "mc/randomness/stdnormalrng.hpp"
 #include "mc/simulation/configuration.hpp"
 
@@ -110,6 +113,28 @@ TEST(GBMTest, DiscountedStockIsMartingaleInExpectation) {
 
     const double tolerance = 4.0 * stats.std_error;
     EXPECT_NEAR(stats.mean, S0, tolerance);
+}
+
+TEST(BoxMullerTest, MeanIsZero) {
+    constexpr std::size_t n = 100000;
+    mc::randomness::NormalRng<mc::randomness::MersenneTwisterRng, mc::randomness::BoxMullerNormal> rng(42);
+
+    const auto stats = sample_stats(n, [&]() { return rng.nextNormal(); });
+
+    // std_error = sigma/sqrt(n) = 1/sqrt(100000) ≈ 0.00316
+    EXPECT_NEAR(stats.mean, 0.0, 4.0 * stats.std_error);
+}
+
+TEST(BoxMullerTest, VarianceIsOne) {
+    constexpr std::size_t n = 100000;
+    mc::randomness::NormalRng<mc::randomness::MersenneTwisterRng, mc::randomness::BoxMullerNormal> rng(99);
+
+    const auto stats = sample_stats(n, [&]() { return rng.nextNormal(); });
+
+    // Variance of sample variance ≈ 2*sigma^4/(n-1) = 2/(n-1) for N(0,1)
+    // => std_error of variance ≈ sqrt(2/(n-1)) ≈ 0.00447
+    const double variance_std_error = std::sqrt(2.0 / static_cast<double>(n - 1));
+    EXPECT_NEAR(stats.variance, 1.0, 4.0 * variance_std_error);
 }
 
 TEST(PayoffTest, AsianArithmeticCall) {
