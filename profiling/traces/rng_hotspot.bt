@@ -1,0 +1,33 @@
+#!/usr/bin/env bpftrace
+// Compare time spent in RNG vs payoff evaluation
+// Useful for identifying bottleneck: RNG generation or payoff math
+// Usage: sudo bpftrace traces/rng_hotspot.bt -- ./build-profile/mc-pricing config/config.yaml
+
+uprobe:./build-profile/mc-pricing:*nextNormal*
+{
+    @rng_start[tid] = nsecs;
+}
+uretprobe:./build-profile/mc-pricing:*nextNormal*
+/@rng_start[tid]/
+{
+    @rng_ns = hist(nsecs - @rng_start[tid]);
+    delete(@rng_start[tid]);
+}
+
+uprobe:./build-profile/mc-pricing:*evaluate*
+{
+    @payoff_start[tid] = nsecs;
+}
+uretprobe:./build-profile/mc-pricing:*evaluate*
+/@payoff_start[tid]/
+{
+    @payoff_ns = hist(nsecs - @payoff_start[tid]);
+    delete(@payoff_start[tid]);
+}
+
+END
+{
+    printf("\nnextNormal() latency (ns):\n");    print(@rng_ns);
+    printf("\npayoff::evaluate() latency (ns):\n"); print(@payoff_ns);
+    clear(@rng_ns); clear(@payoff_ns);
+}

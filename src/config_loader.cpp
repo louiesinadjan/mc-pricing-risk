@@ -44,8 +44,9 @@ void validateRngConfig(const std::string& rng_name, const std::string& distribut
 
     if (engine_only_rngs.count(rng_name)) {
         if (distribution_name.empty()) {
-            throw std::invalid_argument("RNG '" + rng_name +
-                                        "' requires a distribution. Add 'distribution: box_muller' under the rng section.");
+            throw std::invalid_argument(
+                "RNG '" + rng_name +
+                "' requires a distribution. Add 'distribution: box_muller' under the rng section.");
         }
         if (!valid_distributions.count(distribution_name)) {
             throw std::invalid_argument("Invalid distribution: '" + distribution_name +
@@ -151,9 +152,8 @@ Configuration loadConfigFromYaml(const std::string& filepath) {
     cfg.model_name = map_name(model_type, model_to_name, "Unknown model type: ");
 
     // RNG → rng name mapping
-    static const std::unordered_map<std::string, std::string> rng_to_name = {
-        {"std_normal", "StdNormal"},
-        {"mt19937", "mt19937"}};
+    static const std::unordered_map<std::string, std::string> rng_to_name = {{"std_normal", "StdNormal"},
+                                                                             {"mt19937", "mt19937"}};
     cfg.rng_name = map_name(rng_type, rng_to_name, "Unknown RNG type: ");
 
     // Distribution (required for engine-only RNGs like mt19937)

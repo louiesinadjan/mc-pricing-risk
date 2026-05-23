@@ -1,0 +1,36 @@
+# Lima VM for eBPF/perf profiling of mc-pricing
+# Usage: limactl start profiling/lima.yaml
+# Then:  limactl shell mc-profiler
+
+vmType: vz
+
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+    arch: "aarch64"
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+    arch: "x86_64"
+
+cpus: 4
+memory: "4GiB"
+disk: "20GiB"
+
+mounts:
+  - location: "~"
+    writable: true
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -e
+      apt-get update -qq
+      apt-get install -y \
+        cmake g++ libyaml-cpp-dev libgtest-dev \
+        bpftrace \
+        linux-tools-generic \
+        linux-tools-common \
+        perf-tools-unstable \
+        git \
+        2>/dev/null || true
+      # install kernel-matched perf
+      apt-get install -y linux-tools-$(uname -r) 2>/dev/null || true

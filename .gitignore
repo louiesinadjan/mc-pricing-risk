@@ -43,7 +43,7 @@
 .vscode/
 
 .cache/
-build/
+build*/
 
 instructions.md
 CLAUDE.md

@@ -1,5 +1,5 @@
 #include "mc/simulation/simulation.hpp"
-#include <iostream>
+#include <cmath>
 
 namespace mc::simulation {
 

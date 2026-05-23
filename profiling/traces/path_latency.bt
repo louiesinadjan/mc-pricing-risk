@@ -1,0 +1,27 @@
+#!/usr/bin/env bpftrace
+// Per-call latency histogram for GBM::generate_path()
+// Shows ns distribution across all Monte Carlo paths
+// Usage: sudo bpftrace traces/path_latency.bt -- ./build-profile/mc-pricing config/config.yaml
+
+uprobe:./build-profile/mc-pricing:*GBM*generate_path*
+{
+    @start[tid] = nsecs;
+}
+
+uretprobe:./build-profile/mc-pricing:*GBM*generate_path*
+/@start[tid]/
+{
+    @path_ns = hist(nsecs - @start[tid]);
+    @call_count = count();
+    delete(@start[tid]);
+}
+
+END
+{
+    printf("\nGBM::generate_path() latency histogram (ns):\n");
+    print(@path_ns);
+    printf("\nTotal path calls: ");
+    print(@call_count);
+    clear(@path_ns);
+    clear(@call_count);
+}

@@ -21,7 +21,9 @@ public:
         }
 
         double u1, u2;
-        do { u1 = engine_.nextUniform(); } while (u1 == 0.0); // avoid log(0)
+        do {
+            u1 = engine_.nextUniform();
+        } while (u1 == 0.0); // avoid log(0)
         u2 = engine_.nextUniform();
 
         double mag = std::sqrt(-2.0 * std::log(u1));

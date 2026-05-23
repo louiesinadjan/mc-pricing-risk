@@ -16,8 +16,14 @@
 - RNG can be parallelized with threading
 
 ### 4. Benchmarking
-- Use `mc_bench` for performance metrics
+- Use `benchmark_simulation` for wall-clock metrics
 - Measure with 100K+ paths for stable results
+
+### 5. Kernel-Level Profiling
+- eBPF uprobes via bpftrace for per-function latency histograms
+- `perf stat` for hardware counters (cache misses, IPC, branch mispredicts)
+- Flamegraphs for call stack visualization
+- See [profiling.md](profiling.md) for full setup and workflow
 
 ## Bottlenecks
 - Random number generation (can use GPU)

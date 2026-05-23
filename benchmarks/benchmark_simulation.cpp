@@ -29,7 +29,7 @@ int main() {
 
     const int runs = 10;
     double total_time = 0;
-    simulation.run(); // Warm-up run 
+    simulation.run(); // Warm-up run
     for (std::size_t i = 0; i < runs; ++i) {
         auto start = std::chrono::high_resolution_clock::now();
         simulation.run();
@@ -40,8 +40,8 @@ int main() {
         total_time += t;
     }
     double avg = total_time / runs;
-    double paths_per_second = config.num_paths / avg;
-    double ns_per_path = avg * 1e9 / config.num_paths;
+    double paths_per_second = static_cast<double>(config.num_paths) / avg;
+    double ns_per_path = avg * 1e9 / static_cast<double>(config.num_paths);
 
     std::cout << "Benchmark Results\n";
     std::cout << "-----------------\n";

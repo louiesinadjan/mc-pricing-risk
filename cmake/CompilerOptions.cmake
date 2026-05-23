@@ -18,3 +18,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         add_compile_options(-O3 -march=native)
     endif()
 endif()
+
+# Profile build: optimized but with frame pointers + debug symbols for perf/eBPF stack unwinding
+if(CMAKE_BUILD_TYPE STREQUAL "Profile")
+    add_compile_options(-O2 -g -fno-omit-frame-pointer -march=native)
+endif()

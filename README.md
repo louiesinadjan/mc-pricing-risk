@@ -40,6 +40,41 @@ ctest --test-dir build -R BoxMullerTest
 ./build/benchmark_simulation
 ```
 
+## Profiling
+
+Kernel-level observability via eBPF and perf using a Linux VM on macOS. See [docs/profiling.md](docs/profiling.md) for full details.
+
+### Setup
+
+```bash
+brew install lima
+limactl start profiling/lima.yaml --name mc-profiler
+limactl shell mc-profiler
+```
+
+### Build profile binary (inside VM)
+
+```bash
+bash profiling/build_profile.sh
+```
+
+Builds with `-O2 -g -fno-omit-frame-pointer` - required for stack unwinding.
+
+### Run
+
+```bash
+# Hardware counters: cache misses, IPC, branch mispredicts
+bash profiling/perf_stat.sh
+
+# Per-function latency histograms (bpftrace)
+sudo bpftrace profiling/traces/path_latency.bt -- ./build-profile/mc-pricing config/config.yaml
+sudo bpftrace profiling/traces/rng_hotspot.bt  -- ./build-profile/mc-pricing config/config.yaml
+
+# Flamegraph
+bash profiling/flamegraph.sh
+open flamegraph.svg
+```
+
 ## Configuration
 
 Edit `config/config.yaml` to change the simulation:

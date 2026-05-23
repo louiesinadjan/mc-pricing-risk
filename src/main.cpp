@@ -29,8 +29,8 @@ int main(int argc, char* argv[]) {
 
     // Calculate runtime metrics
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    double elapsed_seconds = elapsed.count() / 1000.0;
-    double paths_per_second = config.num_paths / elapsed_seconds;
+    double elapsed_seconds = static_cast<double>(elapsed.count()) / 1000.0;
+    double paths_per_second = static_cast<double>(config.num_paths) / elapsed_seconds;
 
     // Print output based on config
     std::cout << "Monte Carlo Results:\n";

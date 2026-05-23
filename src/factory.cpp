@@ -52,8 +52,8 @@ static const std::map<std::string, RngCreator> rng_creators = {
     {"mt19937",
      [](const Configuration& cfg) -> std::unique_ptr<mc::randomness::Rng> {
          auto seed = cfg.seed == 0
-             ? static_cast<mc::randomness::MersenneTwisterRng::seed_type>(std::random_device{}())
-             : static_cast<mc::randomness::MersenneTwisterRng::seed_type>(cfg.seed);
+                         ? static_cast<mc::randomness::MersenneTwisterRng::seed_type>(std::random_device{}())
+                         : static_cast<mc::randomness::MersenneTwisterRng::seed_type>(cfg.seed);
 
          if (cfg.distribution_name == "BoxMuller") {
              return std::make_unique<mc::randomness::NormalRng<mc::randomness::MersenneTwisterRng,

@@ -1,5 +1,6 @@
 #include "mc/payoff/asian.hpp"
 #include <algorithm>
+#include <cmath>
 #include <numeric>
 
 namespace mc::payoff {
@@ -10,13 +11,14 @@ AsianOption::AsianOption(double strike, AverageType avg_type, OptionType opt_typ
 double AsianOption::evaluate(const mc::core::Path& path) const {
     double average_price = 0.0;
     if (avg_type_ == AverageType::Arithmetic) {
-        average_price = std::accumulate(path.spot.begin(), path.spot.end(), 0.0) / path.size();
+        average_price =
+            std::accumulate(path.spot.begin(), path.spot.end(), 0.0) / static_cast<double>(path.size());
     } else {
         double log_sum = 0.0;
         for (const auto& price : path.spot) {
             log_sum += std::log(price);
         }
-        average_price = std::exp(log_sum / path.size());
+        average_price = std::exp(log_sum / static_cast<double>(path.size()));
     }
 
     if (opt_type_ == OptionType::Call) {

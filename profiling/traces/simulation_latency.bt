@@ -1,0 +1,23 @@
+#!/usr/bin/env bpftrace
+// Histogram of Simulation::run() wall-clock latency (nanoseconds)
+// Usage: sudo bpftrace traces/simulation_latency.bt -p $(pgrep mc-pricing)
+// Or:    sudo bpftrace traces/simulation_latency.bt -- ./build-profile/mc-pricing config/config.yaml
+
+uprobe:./build-profile/mc-pricing:*Simulation*run*
+{
+    @start[tid] = nsecs;
+}
+
+uretprobe:./build-profile/mc-pricing:*Simulation*run*
+/@start[tid]/
+{
+    @latency_ns = hist(nsecs - @start[tid]);
+    delete(@start[tid]);
+}
+
+END
+{
+    printf("\nSimulation::run() latency histogram (ns):\n");
+    print(@latency_ns);
+    clear(@latency_ns);
+}

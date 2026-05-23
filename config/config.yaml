@@ -4,13 +4,13 @@ market:
   # dividend_yield: 0.0   # Not implemented yet
 
 contract:
-  type: european_call       # european_call | european_put | asian_arithmetic_call | asian_geometric_call
+  type: european_call # european_call | european_put | asian_arithmetic_call | asian_geometric_call
   strike: 100.0
   maturity: 1.0
 
   averaging:
-    type: arithmetic      # arithmetic | geometric
-    frequency: daily      # used for Asian options
+    type: arithmetic # arithmetic | geometric
+    frequency: daily # used for Asian options
     start_time: 0.0
     end_time: 1.0
 
@@ -39,8 +39,8 @@ simulation:
   # control_variate: false
 
 rng:
-  type: mt19937          # std_normal | mt19937
-  distribution: box_muller  # required for engine-only types (mt19937); options: box_muller
+  type: mt19937 # std_normal | mt19937
+  distribution: box_muller # required for engine-only types (mt19937); options: box_muller
 
 risk:
   # metrics:
