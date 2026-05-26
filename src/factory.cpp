@@ -1,10 +1,13 @@
 #include "mc/factory.hpp"
 #include "mc/model/gbm.hpp"
+#include "mc/model/heston.hpp"
 #include "mc/payoff/asian.hpp"
 #include "mc/payoff/european.hpp"
 #include "mc/randomness/box_muller.hpp"
+#include "mc/randomness/inverse_normal_cdf.hpp"
 #include "mc/randomness/mt19937.hpp"
 #include "mc/randomness/normal_rng.hpp"
+#include "mc/randomness/sobol.hpp"
 #include "mc/randomness/stdnormalrng.hpp"
 #include "mc/simulation/configuration.hpp"
 
@@ -22,11 +25,13 @@ static const std::map<std::string, ModelCreator> model_creators = {
     {"GBM",
      [](const Configuration& cfg) {
          return std::make_unique<mc::model::GBM>(cfg.spot, cfg.drift, cfg.volatility, cfg.num_timesteps);
+     }},
+    {"Heston",
+     [](const Configuration& cfg) {
+         return std::make_unique<mc::model::Heston>(
+             cfg.spot, cfg.drift, cfg.v0, cfg.kappa,
+             cfg.theta, cfg.sigma, cfg.rho, cfg.num_timesteps);
      }}
-    // Add more models here:
-    // {"Heston", [](const Configuration& cfg) {
-    //     return std::make_unique<mc::model::Heston>(...);
-    // }}
 };
 
 std::unique_ptr<mc::model::Model> createModel(const Configuration& config) {
@@ -60,11 +65,13 @@ static const std::map<std::string, RngCreator> rng_creators = {
                                                                mc::randomness::BoxMullerNormal>>(seed);
          }
          throw std::invalid_argument("Unsupported distribution for mt19937: " + cfg.distribution_name);
+     }},
+    {"Sobol",
+     [](const Configuration& cfg) -> std::unique_ptr<mc::randomness::Rng> {
+         auto seed = static_cast<mc::randomness::SobolEngine::seed_type>(cfg.seed);
+         return std::make_unique<mc::randomness::NormalRng<mc::randomness::SobolEngine,
+                                                           mc::randomness::InverseNormalCDF>>(seed);
      }}
-    // Add more RNGs here:
-    // {"Sobol", [](const Configuration& cfg) {
-    //     return std::make_unique<mc::randomness::SobolRng>();
-    // }}
 };
 
 std::unique_ptr<mc::randomness::Rng> createRng(const Configuration& config) {

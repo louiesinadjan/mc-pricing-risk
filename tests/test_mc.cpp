@@ -1,9 +1,12 @@
 #include "mc/model/gbm.hpp"
+#include "mc/model/heston.hpp"
 #include "mc/payoff/asian.hpp"
 #include "mc/payoff/european.hpp"
 #include "mc/randomness/box_muller.hpp"
+#include "mc/randomness/inverse_normal_cdf.hpp"
 #include "mc/randomness/mt19937.hpp"
 #include "mc/randomness/normal_rng.hpp"
+#include "mc/randomness/sobol.hpp"
 #include "mc/randomness/stdnormalrng.hpp"
 #include "mc/simulation/configuration.hpp"
 
@@ -146,4 +149,73 @@ TEST(PayoffTest, AsianArithmeticCall) {
     double expected_avg = (100 + 102 + 101 + 103) / 4.0;
     double expected = std::max(expected_avg - strike, 0.0);
     EXPECT_DOUBLE_EQ(payoff.evaluate(path), expected);
+}
+
+TEST(HestonTest, TerminalMeanUsesManyPaths) {
+    constexpr double S0 = 100.0;
+    constexpr double r = 0.05;
+    constexpr double v0 = 0.04;
+    constexpr double kappa = 2.0;
+    constexpr double theta = 0.04;
+    constexpr double sigma = 0.3;
+    constexpr double rho = -0.7;
+    constexpr std::size_t steps = 252;
+    constexpr std::size_t npaths = 200000;
+
+    mc::model::Heston heston(S0, r, v0, kappa, theta, sigma, rho, steps);
+    mc::randomness::StdNormalRng rng(42);
+
+    const auto stats = sample_stats(npaths, [&]() {
+        mc::core::Path path;
+        heston.generate_path(path, 1.0, rng);
+        return path[path.size() - 1];
+    });
+
+    const double expected = S0 * std::exp(r * 1.0);
+    const double tolerance = 4.0 * stats.std_error;
+    EXPECT_NEAR(stats.mean, expected, tolerance);
+}
+
+TEST(SobolTest, FirstValueIsHalf) {
+    mc::randomness::SobolEngine sobol(0);
+    EXPECT_DOUBLE_EQ(sobol.nextUniform(), 0.5);
+}
+
+TEST(SobolTest, SequenceMatchesExpected) {
+    mc::randomness::SobolEngine sobol(0);
+    // Gray-code 1D Sobol (no scramble): verified analytically
+    const std::vector<double> expected = {0.5, 0.75, 0.25, 0.375, 0.875, 0.625, 0.125};
+    for (double e : expected) {
+        EXPECT_DOUBLE_EQ(sobol.nextUniform(), e);
+    }
+}
+
+TEST(SobolTest, AllValuesInUnitInterval) {
+    mc::randomness::SobolEngine sobol(42);
+    for (int i = 0; i < 10000; ++i) {
+        const double v = sobol.nextUniform();
+        EXPECT_GE(v, 0.0);
+        EXPECT_LT(v, 1.0);
+    }
+}
+
+TEST(SobolNormalTest, MeanIsZero) {
+    constexpr std::size_t n = 100000;
+    mc::randomness::NormalRng<mc::randomness::SobolEngine,
+                              mc::randomness::InverseNormalCDF> rng(0);
+
+    const auto stats = sample_stats(n, [&]() { return rng.nextNormal(); });
+
+    EXPECT_NEAR(stats.mean, 0.0, 4.0 * stats.std_error);
+}
+
+TEST(SobolNormalTest, VarianceIsOne) {
+    constexpr std::size_t n = 100000;
+    mc::randomness::NormalRng<mc::randomness::SobolEngine,
+                              mc::randomness::InverseNormalCDF> rng(0);
+
+    const auto stats = sample_stats(n, [&]() { return rng.nextNormal(); });
+
+    const double variance_std_error = std::sqrt(2.0 / static_cast<double>(n - 1));
+    EXPECT_NEAR(stats.variance, 1.0, 4.0 * variance_std_error);
 }

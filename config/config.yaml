@@ -20,15 +20,16 @@ model:
   gbm:
     volatility: 0.20
 
+  # Not implemented yet
   # local_vol:
   #   surface_file: "vol_surface.csv"
 
-  # heston:
-  #   v0: 0.04
-  #   kappa: 2.0
-  #   theta: 0.04
-  #   sigma: 0.5
-  #   rho: -0.7
+  heston:
+    v0: 0.04
+    kappa: 2.0
+    theta: 0.04
+    sigma: 0.5
+    rho: -0.7
 
 simulation:
   paths: 100000
@@ -39,7 +40,7 @@ simulation:
   # control_variate: false
 
 rng:
-  type: mt19937 # std_normal | mt19937
+  type: mt19937 # std_normal | mt19937 | sobol
   distribution: box_muller # required for engine-only types (mt19937); options: box_muller
 
 risk:

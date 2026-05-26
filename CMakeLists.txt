@@ -17,8 +17,10 @@ include(Warnings)
 add_library(mc-lib
     src/simulation/simulation.cpp
     src/model/gbm.cpp
+    src/model/heston.cpp
     src/randomness/stdnormalrng.cpp
     src/randomness/mt19937.cpp
+    src/randomness/sobol.cpp
     src/payoff/european.cpp
     src/payoff/asian.cpp
     src/config_loader.cpp

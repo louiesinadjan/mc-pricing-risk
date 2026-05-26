@@ -32,7 +32,7 @@ void validatePayoffName(const std::string& payoff_name) {
 }
 
 void validateRngConfig(const std::string& rng_name, const std::string& distribution_name) {
-    static const std::set<std::string> valid_rngs = {"StdNormal", "mt19937"};
+    static const std::set<std::string> valid_rngs = {"StdNormal", "mt19937", "Sobol"};
     // Engine-only RNGs produce uniform samples and require an explicit distribution.
     static const std::set<std::string> engine_only_rngs = {"mt19937"};
     static const std::set<std::string> valid_distributions = {"BoxMuller"};
@@ -153,7 +153,8 @@ Configuration loadConfigFromYaml(const std::string& filepath) {
 
     // RNG → rng name mapping
     static const std::unordered_map<std::string, std::string> rng_to_name = {{"std_normal", "StdNormal"},
-                                                                             {"mt19937", "mt19937"}};
+                                                                             {"mt19937",    "mt19937"},
+                                                                             {"sobol",      "Sobol"}};
     cfg.rng_name = map_name(rng_type, rng_to_name, "Unknown RNG type: ");
 
     // Distribution (required for engine-only RNGs like mt19937)
